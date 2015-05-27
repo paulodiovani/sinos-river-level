@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
+  "bin": "cli.js",
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register"
   },
