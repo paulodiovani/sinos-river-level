@@ -1,0 +1,32 @@
+{
+  "name": "sinos-river-parser",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulodiovani/sinos-river-parser.git"
+  },
+  "keywords": [
+    "river",
+    "sinos",
+    "html",
+    "parser"
+  ],
+  "author": "Paulo Diovani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/paulodiovani/sinos-river-parser/issues"
+  },
+  "homepage": "https://github.com/paulodiovani/sinos-river-parser#readme",
+  "dependencies": {
+    "coffee-script": "^1.9.3"
+  },
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "mocha": "^2.2.5"
+  }
+}
