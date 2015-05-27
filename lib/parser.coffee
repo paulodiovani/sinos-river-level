@@ -4,15 +4,15 @@ module.exports = class Parser
   constructor: (@htmlStream) ->
 
   getYears: (callback) ->
-    tr    = trumpet()
-    years = []
+    tr     = trumpet()
+    result = years: []
 
     tr.selectAll '#sheet-menu > div > a', (el) ->
       el.createReadStream().on 'data', (data) ->
-        years.push data.toString()
+        result.years.push data.toString()
 
     tr.on 'error', callback
     tr.on 'end', ->
-      callback null, years
+      callback null, result
 
     @htmlStream.pipe tr

@@ -11,6 +11,6 @@ describe 'Parser', ->
   it 'lists available years', (done) ->
     parser.getYears (err, years) ->
       expect(err).to.be.null
-      expect(years).to.be.eql ['2001', '2002', '2003', '2004']
+      expect(years).to.be.eql years: ['2001', '2002', '2003', '2004']
       done()
 
