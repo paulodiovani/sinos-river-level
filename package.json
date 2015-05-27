@@ -24,7 +24,8 @@
   },
   "homepage": "https://github.com/paulodiovani/sinos-river-parser#readme",
   "dependencies": {
-    "coffee-script": "^1.9.3"
+    "coffee-script": "^1.9.3",
+    "trumpet": "^1.7.1"
   },
   "devDependencies": {
     "chai": "^2.3.0",
