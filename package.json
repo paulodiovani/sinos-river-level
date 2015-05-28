@@ -5,7 +5,7 @@
   "main": "index.js",
   "bin": "cli.js",
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register"
+    "test": "node_modules/.bin/mocha test/**/*_spec.coffee"
   },
   "repository": {
     "type": "git",
