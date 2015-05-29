@@ -53,8 +53,12 @@ describe 'Reader', ->
       @url     = "http://#{@address}:#{@port}"
 
       @server = http.createServer (req, res) =>
-        res.writeHead 200, 'Content-Type': 'text/html'
-        res.end @dummy
+        if req.url.indexOf('404') > -1
+          res.writeHead 404
+          res.end()
+        else
+          res.writeHead 200, 'Content-Type': 'text/html'
+          res.end @dummy
 
       @server.listen @port, @address
 
@@ -84,4 +88,10 @@ describe 'Reader', ->
           fullData += data.toString()
         @stream.on 'end', =>
           expect(fullData).to.be.eql @dummy.toString()
+          done()
+
+      it 'fails to read non success response', (done) ->
+        @reader.getUrlStream "#{@url}/404", (err, stream) ->
+          expect(err).to.be.instanceof Error
+          expect(err.message).to.be.eql 'http status 404: Not Found'
           done()
