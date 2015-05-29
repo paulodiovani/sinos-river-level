@@ -1,5 +1,6 @@
 expect = require('chai').expect
 fs     = require('fs')
+http   = require('http')
 Stream = require('stream')
 
 Reader = require('../lib/reader')
@@ -32,6 +33,46 @@ describe 'Reader', ->
     describe '#getFileStream', ->
       beforeEach (done) ->
         @reader.getFileStream @file, (err, @stream) =>
+          done()
+
+      it 'returns a stream', ->
+        expect(@stream).to.be.instanceof Stream
+
+      it 'contains dummy data', (done) ->
+        fullData = ''
+        @stream.on 'data', (data) ->
+          fullData += data.toString()
+        @stream.on 'end', =>
+          expect(fullData).to.be.eql @dummy.toString()
+          done()
+
+  context 'when reading from a server', ->
+    before ->
+      @address = '127.0.0.1'
+      @port    = 1338
+      @url     = "http://#{@address}:#{@port}"
+
+      @server = http.createServer (req, res) =>
+        res.writeHead 200, 'Content-Type': 'text/html'
+        res.end @dummy
+
+      @server.listen @port, @address
+
+    after ->
+      @server.close()
+
+    describe '#constructor', ->
+      it 'accepts an url as source argument', (done) ->
+        reader = new Reader @url
+        expect(reader.sourceType).to.be.eql 'url'
+        reader.getStream (err, stream) ->
+          expect(err).to.be.null
+          expect(stream).to.be.instanceof Stream
+          done()
+
+    describe '#getUrlStream', ->
+      beforeEach (done) ->
+        @reader.getUrlStream @url, (err, @stream) =>
           done()
 
       it 'returns a stream', ->

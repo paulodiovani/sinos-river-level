@@ -1,9 +1,11 @@
-fs  = require('fs')
-url = require('url')
+fs   = require('fs')
+url  = require('url')
+http = require('http')
 
 module.exports = class Reader
   messages =
     noSourceError: 'a valid source must be provided'
+    httpStatusError: 'http status'
 
   source: null
   sourceType: null
@@ -26,6 +28,19 @@ module.exports = class Reader
         @getUrlStream @source, callback
       else
         callback new Error(messages.noSourceError)
+    return
 
   getFileStream: (path, callback = ->) ->
     callback null, fs.createReadStream(path)
+    return
+
+  getUrlStream: (url, callback = ->) ->
+    http.get url, (res) ->
+      unless res.statusCode is 200
+        err = new Error "#{messages.httpStatusError} #{res.statusCode}:
+          #{http.STATUS_CODES[res.statusCode]}"
+        callback err
+        return
+      callback null, res
+    .on 'error', callback
+    return
