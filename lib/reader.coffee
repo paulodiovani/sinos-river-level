@@ -18,14 +18,14 @@ module.exports = class Reader
       else
         @source = null
 
-  getStream: ->
+  getStream: (callback = ->) ->
     switch @sourceType
       when 'file'
-        @getFileStream @source
+        @getFileStream @source, callback
       when 'url'
-        @getUrlStream @source
+        @getUrlStream @source, callback
       else
-        throw new Error(messages.noSourceError)
+        callback new Error(messages.noSourceError)
 
-  getFileStream: (path) ->
-    fs.createReadStream path
+  getFileStream: (path, callback = ->) ->
+    callback null, fs.createReadStream(path)

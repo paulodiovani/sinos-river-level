@@ -10,10 +10,13 @@ describe 'Reader', ->
     @dummy = fs.readFileSync @file
 
   describe '#constructor', ->
-    it 'accepts a file as source argument', ->
+    it 'accepts a file as source argument', (done)->
       reader = new Reader @file
       expect(reader.sourceType).to.be.eql 'file'
-      expect(reader.getStream()).to.be.instanceof Stream
+      reader.getStream (err, stream) ->
+        expect(err).to.be.null
+        expect(stream).to.be.instanceof Stream
+        done()
 
     it 'accepts an url as source argument'
 
@@ -22,13 +25,16 @@ describe 'Reader', ->
       @reader = new Reader()
 
     describe '#getStream', ->
-      it 'fails when no source is passed to constructor', ->
-        expect(@reader.getStream.bind @reader)
-          .to.throw 'a valid source must be provided'
+      it 'fails when no source is passed to constructor', (done) ->
+        @reader.getStream (err, stream) ->
+          expect(err).to.be.instanceof Error
+          expect(err.message).to.be.eql 'a valid source must be provided'
+          done()
 
     describe '#getFileStream', ->
-      beforeEach ->
-        @stream = @reader.getFileStream @file
+      beforeEach (done) ->
+        @reader.getFileStream @file, (err, @stream) =>
+          done()
 
       it 'returns a stream', ->
         expect(@stream).to.be.instanceof Stream
