@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/paulodiovani/sinos-river-parser.svg?branch=master)](https://travis-ci.org/paulodiovani/sinos-river-parser)
+
 # Sinos River Level Reader
 
 **WORK IN PROGRESS**
