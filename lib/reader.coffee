@@ -8,7 +8,13 @@ module.exports = class Reader
   sourceType: null
 
   getStream: ->
-    throw new Error(messages.noSourceError) if @source is null
+    switch @sourceType
+      when 'file'
+        @getFileStream source
+      when 'url'
+        @getUrlStream source
+      else
+        throw new Error(messages.noSourceError)
 
   getFileStream: (path) ->
     fs.createReadStream path
