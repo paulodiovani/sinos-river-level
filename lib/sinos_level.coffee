@@ -8,6 +8,14 @@ class SinosLevel
 
   constructor: (@source = DEFAULT_SOURCE) ->
 
+  init: (callback = ->) ->
+    @reader = new Reader @source
+    @reader.getStream (err, stream) =>
+      return callback err if err?
+      @parser = new Parser stream
+      callback null
+    return
+
 module.exports = SinosLevel
 module.exports.Reader = Reader
 module.exports.Parser = Parser
