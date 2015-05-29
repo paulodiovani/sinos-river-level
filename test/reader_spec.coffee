@@ -7,10 +7,13 @@ Reader = require('../lib/reader')
 describe 'Reader', ->
   before ->
     @file  = './test/fixtures/dummy.html'
-    @dummy = fs.readFileSync(@file)
+    @dummy = fs.readFileSync @file
 
   describe '#constructor', ->
-    it 'accepts a file as source argument'
+    it 'accepts a file as source argument', ->
+      reader = new Reader @file
+      expect(reader.sourceType).to.be.eql 'file'
+      expect(reader.getStream()).to.be.instanceof Stream
 
     it 'accepts an url as source argument'
 
@@ -20,7 +23,7 @@ describe 'Reader', ->
 
     describe '#getStream', ->
       it 'fails when no source is passed to constructor', ->
-        expect(@reader.getStream.bind(@reader))
+        expect(@reader.getStream.bind @reader)
           .to.throw 'a valid source must be provided'
 
     describe '#getFileStream', ->
