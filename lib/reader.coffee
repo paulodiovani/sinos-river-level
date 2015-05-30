@@ -1,6 +1,7 @@
-fs   = require('fs')
-url  = require('url')
-http = require('http')
+fs    = require('fs')
+url   = require('url')
+http  = require('http')
+https = require('https')
 
 module.exports = class Reader
   messages =
@@ -13,7 +14,7 @@ module.exports = class Reader
   constructor: (@source) ->
     return unless @source
     switch
-      when url.parse(@source).protocol in ['http:', 'https:']
+      when @_httpOptions(@source).protocol in ['http:', 'https:']
         @sourceType = 'url'
       when fs.existsSync @source
         @sourceType = 'file'
@@ -34,8 +35,11 @@ module.exports = class Reader
     callback null, fs.createReadStream(path)
     return
 
-  getUrlStream: (url, callback = ->) ->
-    http.get url, (res) ->
+  getUrlStream: (options, callback = ->) ->
+    options = @_httpOptions options
+    client  = if options.protocol is 'https:' then https else http
+
+    client.get options, (res) ->
       unless res.statusCode is 200
         err = new Error "#{messages.httpStatusError} #{res.statusCode}:
           #{http.STATUS_CODES[res.statusCode]}"
@@ -44,3 +48,7 @@ module.exports = class Reader
       callback null, res
     .on 'error', callback
     return
+
+  _httpOptions: (options) ->
+    options = url.parse options if typeof options is 'string'
+    options
