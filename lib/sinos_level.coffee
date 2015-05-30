@@ -6,6 +6,10 @@ class SinosLevel
   DEFAULT_SOURCE = 'https://docs.google.com/spreadsheet/pub?key=0AkXSgrDXAQJjdG1JZVFDcEpLQU5JY2dLTWZBcW9jVEE&gid=9'
   # coffeelint: enable=max_line_length
 
+  source: null
+  reader: null
+  parser: null
+
   constructor: (@source = DEFAULT_SOURCE) ->
 
   init: (callback = ->) ->

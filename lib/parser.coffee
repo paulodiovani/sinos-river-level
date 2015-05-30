@@ -3,7 +3,7 @@ trumpet = require('trumpet')
 module.exports = class Parser
   constructor: (@htmlStream) ->
 
-  getYears: (callback) ->
+  getYears: (callback = ->) ->
     tr     = trumpet()
     result = years: []
 
