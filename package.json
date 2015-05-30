@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
-  "bin": "cli.js",
+  "bin": "bin/cli.js",
   "scripts": {
     "test": "node_modules/.bin/mocha test/**/*_spec.coffee",
     "test debug": "node_modules/.bin/mocha debug test/**/*_spec.coffee"
