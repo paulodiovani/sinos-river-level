@@ -1,6 +1,8 @@
 expect = require('chai').expect
 fs     = require('fs')
+url    = require('url')
 http   = require('http')
+https  = require('https')
 Stream = require('stream')
 
 Reader = require('../lib/reader')
@@ -46,7 +48,7 @@ describe 'Reader', ->
           expect(fullData).to.be.eql @dummy.toString()
           done()
 
-  context 'when reading from a server', ->
+  context 'when reading from an http server', ->
     before ->
       @address = '127.0.0.1'
       @port    = 1338
@@ -94,4 +96,46 @@ describe 'Reader', ->
         @reader.getUrlStream "#{@url}/404", (err, stream) ->
           expect(err).to.be.instanceof Error
           expect(err.message).to.be.eql 'http status 404: Not Found'
+          done()
+
+  context 'when reading from a secure http server', ->
+    before ->
+      @address = '127.0.0.1'
+      @port    = 1338
+      @url     = "https://#{@address}:#{@port}"
+
+      @server = https.createServer
+        key: fs.readFileSync './test/fixtures/server.key'
+        cert: fs.readFileSync './test/fixtures/server.crt'
+      , (req, res) =>
+        if req.url.indexOf('404') > -1
+          res.writeHead 404
+          res.end()
+        else
+          res.writeHead 200, 'Content-Type': 'text/html'
+          res.end @dummy
+
+      @server.listen @port, @address
+
+    after ->
+      @server.close()
+
+    describe '#getUrlStream', ->
+      beforeEach (done) ->
+        options = url.parse @url
+        options.ca = fs.readFileSync './test/fixtures/server.crt'
+        options.rejectUnauthorized = false
+
+        @reader.getUrlStream options, (err, @stream) =>
+          done()
+
+      it 'returns a stream', ->
+        expect(@stream).to.be.instanceof Stream
+
+      it 'contains dummy data', (done) ->
+        fullData = ''
+        @stream.on 'data', (data) ->
+          fullData += data.toString()
+        @stream.on 'end', =>
+          expect(fullData).to.be.eql @dummy.toString()
           done()
