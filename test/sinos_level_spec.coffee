@@ -1,5 +1,9 @@
-expect = require('chai').expect
-fs     = require('fs')
+chai  = require('chai')
+spies = require('chai-spies')
+fs    = require('fs')
+
+chai.use spies
+expect = chai.expect
 
 SinosLevel = require('../lib/sinos_level')
 Reader     = require('../lib/reader')
@@ -46,3 +50,18 @@ describe 'SinosLevel', ->
       @sinos.init (err) ->
         expect(err).to.be.instanceof Error
         done()
+
+  context 'when not initialized', ->
+    describe '#getYears', ->
+      it 'fails', ->
+        expect(@sinos.getYears.bind @sinos).to.throw 'parser is not defined'
+
+  context 'when initialized', ->
+    beforeEach (done) ->
+      @sinos.init done
+
+    describe '#getYears', ->
+      it 'delegates to Parser#getYears', ->
+        chai.spy.on Parser::, 'getYears'
+        @sinos.getYears()
+        expect(Parser::getYears).to.be.called()
