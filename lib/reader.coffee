@@ -1,7 +1,7 @@
-fs    = require('fs')
-url   = require('url')
-http  = require('http')
-https = require('https')
+fs      = require('fs')
+url     = require('url')
+through = require('through')
+phantom = require('phantom')
 
 module.exports = class Reader
   messages =
@@ -31,23 +31,24 @@ module.exports = class Reader
         callback new Error(messages.noSourceError)
     return
 
-  getFileStream: (path, callback = ->) ->
-    callback null, fs.createReadStream(path)
+  getFileStream: (source, callback = ->) ->
+    callback null, fs.createReadStream(source)
     return
 
-  getUrlStream: (options, callback = ->) ->
-    options = @_httpOptions options
-    client  = if options.protocol is 'https:' then https else http
+  getUrlStream: (source, callback = ->) ->
+    tr = through (data) ->
+      @emit 'data', data
 
-    client.get options, (res) ->
-      unless res.statusCode is 200
-        err = new Error "#{messages.httpStatusError} #{res.statusCode}:
-          #{http.STATUS_CODES[res.statusCode]}"
-        callback err
-        return
-      callback null, res
-    .on 'error', callback
-    return
+
+    phantom.create (ph) ->
+      ph.createPage (page) ->
+        page.open source, (status) ->
+          return callback new Error(status) if status isnt 'success'
+          callback null, tr
+
+          page.evaluate (-> document.body.innerHTML), (result) ->
+            tr.end result
+            ph.exit()
 
   _httpOptions: (options) ->
     options = url.parse options if typeof options is 'string'
