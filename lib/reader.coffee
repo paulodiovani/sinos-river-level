@@ -46,7 +46,7 @@ module.exports = class Reader
         page.open source, @_onPageOpen.bind(this, cb, ph, page)
 
   _onPageResourceReceived: (cb, res) ->
-    if res.stage is 'end' and res.status isnt 200
+    if res.stage is 'end' and res.status >= 400
       err = new Error "#{messages.httpStatusError} #{res.status}:
         #{http.STATUS_CODES[res.status]}"
       cb err
