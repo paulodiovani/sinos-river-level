@@ -37,27 +37,29 @@ module.exports = class Reader
     return
 
   getUrlStream: (source, callback = ->) ->
-    tr = through (data) ->
-      @emit 'data', data
-
-    phantom.create (ph) ->
-      ph.createPage (page) ->
-        page.set 'onResourceReceived', (res) ->
-          if res.stage is 'end' and res.status isnt 200
-            err = new Error "#{messages.httpStatusError} #{res.status}:
-              #{http.STATUS_CODES[res.status]}"
-            callback err
-
-        page.open source, (status) ->
-          return if status isnt 'success'
-          callback null, tr
-
-          page.evaluate (-> document.body.innerHTML), (result) ->
-            tr.end result
-            ph.exit()
-    ,
+    phantom.create
       parameters:
         'ignore-ssl-errors': 'yes'
+    , (ph) =>
+      ph.createPage (page) =>
+        page.set 'onResourceReceived', @_onPageResourceReceived.bind(this, callback)
+        page.open source, @_onPageOpen.bind(this, callback, ph, page)
+
+  _onPageResourceReceived: (callback, res) ->
+    if res.stage is 'end' and res.status isnt 200
+      err = new Error "#{messages.httpStatusError} #{res.status}:
+        #{http.STATUS_CODES[res.status]}"
+      callback err
+
+  _onPageOpen: (callback, ph, page, status) ->
+    return if status isnt 'success'
+
+    tr = through (data) -> @emit 'data', data
+    callback null, tr
+
+    page.evaluate (-> document.body.innerHTML), (content) ->
+      tr.end content
+      ph.exit()
 
   _httpOptions: (options) ->
     options = url.parse options if typeof options is 'string'
