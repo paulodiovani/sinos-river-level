@@ -1,5 +1,6 @@
 fs      = require('fs')
 url     = require('url')
+http    = require('http')
 through = require('through')
 phantom = require('phantom')
 
@@ -39,11 +40,16 @@ module.exports = class Reader
     tr = through (data) ->
       @emit 'data', data
 
-
     phantom.create (ph) ->
       ph.createPage (page) ->
+        page.set 'onResourceReceived', (res) ->
+          if res.stage is 'end' and res.status isnt 200
+            err = new Error "#{messages.httpStatusError} #{res.status}:
+              #{http.STATUS_CODES[res.status]}"
+            callback err
+
         page.open source, (status) ->
-          return callback new Error(status) if status isnt 'success'
+          return if status isnt 'success'
           callback null, tr
 
           page.evaluate (-> document.body.innerHTML), (result) ->
