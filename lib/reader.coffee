@@ -49,6 +49,9 @@ module.exports = class Reader
           page.evaluate (-> document.body.innerHTML), (result) ->
             tr.end result
             ph.exit()
+    ,
+      parameters:
+        'ignore-ssl-errors': 'yes'
 
   _httpOptions: (options) ->
     options = url.parse options if typeof options is 'string'
