@@ -52,7 +52,7 @@ module.exports = class Reader
       cb err
 
   _onPageOpen: (cb, ph, page, status) ->
-    return if status isnt 'success'
+    return ph.exit() if status isnt 'success'
     thru = through (data) -> @emit 'data', data
     cb null, thru
 
