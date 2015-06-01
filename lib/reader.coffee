@@ -22,40 +22,40 @@ module.exports = class Reader
       else
         @source = null
 
-  getStream: (callback = ->) ->
+  getStream: (cb = ->) ->
     switch @sourceType
       when 'file'
-        @getFileStream @source, callback
+        @getFileStream @source, cb
       when 'url'
-        @getUrlStream @source, callback
+        @getUrlStream @source, cb
       else
-        callback new Error(messages.noSourceError)
+        cb new Error(messages.noSourceError)
     return
 
-  getFileStream: (source, callback = ->) ->
-    callback null, fs.createReadStream(source)
+  getFileStream: (source, cb = ->) ->
+    cb null, fs.createReadStream(source)
     return
 
-  getUrlStream: (source, callback = ->) ->
+  getUrlStream: (source, cb = ->) ->
     phantom.create
       parameters:
         'ignore-ssl-errors': 'yes'
     , (ph) =>
       ph.createPage (page) =>
-        page.set 'onResourceReceived', @_onPageResourceReceived.bind(this, callback)
-        page.open source, @_onPageOpen.bind(this, callback, ph, page)
+        page.set 'onResourceReceived', @_onPageResourceReceived.bind(this, cb)
+        page.open source, @_onPageOpen.bind(this, cb, ph, page)
 
-  _onPageResourceReceived: (callback, res) ->
+  _onPageResourceReceived: (cb, res) ->
     if res.stage is 'end' and res.status isnt 200
       err = new Error "#{messages.httpStatusError} #{res.status}:
         #{http.STATUS_CODES[res.status]}"
-      callback err
+      cb err
 
-  _onPageOpen: (callback, ph, page, status) ->
+  _onPageOpen: (cb, ph, page, status) ->
     return if status isnt 'success'
 
     tr = through (data) -> @emit 'data', data
-    callback null, tr
+    cb null, tr
 
     page.evaluate (-> document.body.innerHTML), (content) ->
       tr.end content
