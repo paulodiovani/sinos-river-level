@@ -53,12 +53,11 @@ module.exports = class Reader
 
   _onPageOpen: (cb, ph, page, status) ->
     return if status isnt 'success'
-
-    tr = through (data) -> @emit 'data', data
-    cb null, tr
+    thru = through (data) -> @emit 'data', data
+    cb null, thru
 
     page.evaluate (-> document.body.innerHTML), (content) ->
-      tr.end content
+      thru.end content
       ph.exit()
 
   _httpOptions: (options) ->
