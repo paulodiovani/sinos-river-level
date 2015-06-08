@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paulodiovani/sinos-river-level.git"
+    "url": "git+https://github.com/paulodiovani/sinos-river-parser.git"
   },
   "keywords": [
     "river",
@@ -22,9 +22,9 @@
   "author": "Paulo Diovani",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/paulodiovani/sinos-river-level/issues"
+    "url": "https://github.com/paulodiovani/sinos-river-parser/issues"
   },
-  "homepage": "https://github.com/paulodiovani/sinos-river-level#readme",
+  "homepage": "https://github.com/paulodiovani/sinos-river-parser#readme",
   "dependencies": {
     "coffee-script": "^1.9.3",
     "minimist": "^1.1.1",
