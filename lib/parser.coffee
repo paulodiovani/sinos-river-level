@@ -7,7 +7,7 @@ module.exports = class Parser
     tr     = trumpet()
     result = years: []
 
-    tr.selectAll '#sheet-menu > div > a', (el) ->
+    tr.selectAll '#sheet-menu > [id^=sheet-button] > a', (el) ->
       el.createReadStream().on 'data', (data) ->
         result.years.push data.toString()
 
