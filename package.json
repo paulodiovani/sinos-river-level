@@ -1,6 +1,6 @@
 {
-  "name": "sinos-river-parser",
-  "version": "0.1.0",
+  "name": "sinos-river-level",
+  "version": "0.2.0",
   "description": "",
   "main": "index.js",
   "bin": "bin/cli.js",
@@ -10,20 +10,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paulodiovani/sinos-river-parser.git"
+    "url": "git+https://github.com/paulodiovani/sinos-river-level.git"
   },
   "keywords": [
     "river",
     "sinos",
+    "level",
     "html",
     "parser"
   ],
   "author": "Paulo Diovani",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/paulodiovani/sinos-river-parser/issues"
+    "url": "https://github.com/paulodiovani/sinos-river-level/issues"
   },
-  "homepage": "https://github.com/paulodiovani/sinos-river-parser#readme",
+  "homepage": "https://github.com/paulodiovani/sinos-river-level#readme",
   "dependencies": {
     "coffee-script": "^1.9.3",
     "minimist": "^1.1.1",
