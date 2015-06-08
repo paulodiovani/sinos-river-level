@@ -15,17 +15,17 @@ class SinosLevel
 
   constructor: (@source = DEFAULT_SOURCE) ->
 
-  init: (callback = ->) ->
+  init: (cb = ->) ->
     @reader = new Reader @source
     @reader.getStream (err, stream) =>
-      return callback err if err?
+      return cb err if err?
       @parser = new Parser stream
-      callback null
+      cb null
     return
 
-  getYears: (callback = ->) ->
+  getYears: (cb = ->) ->
     throw new Error messages.noParserError unless @parser?
-    @parser.getYears callback
+    @parser.getYears cb
 
 module.exports = SinosLevel
 module.exports.Reader = Reader

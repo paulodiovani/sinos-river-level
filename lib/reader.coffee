@@ -1,7 +1,8 @@
-fs    = require('fs')
-url   = require('url')
-http  = require('http')
-https = require('https')
+fs      = require('fs')
+url     = require('url')
+http    = require('http')
+through = require('through')
+phantom = require('phantom')
 
 module.exports = class Reader
   messages =
@@ -21,33 +22,43 @@ module.exports = class Reader
       else
         @source = null
 
-  getStream: (callback = ->) ->
+  getStream: (cb = ->) ->
     switch @sourceType
       when 'file'
-        @getFileStream @source, callback
+        @getFileStream @source, cb
       when 'url'
-        @getUrlStream @source, callback
+        @getUrlStream @source, cb
       else
-        callback new Error(messages.noSourceError)
+        cb new Error(messages.noSourceError)
     return
 
-  getFileStream: (path, callback = ->) ->
-    callback null, fs.createReadStream(path)
+  getFileStream: (source, cb = ->) ->
+    cb null, fs.createReadStream(source)
     return
 
-  getUrlStream: (options, callback = ->) ->
-    options = @_httpOptions options
-    client  = if options.protocol is 'https:' then https else http
+  getUrlStream: (source, cb = ->) ->
+    phantom.create
+      parameters:
+        'ignore-ssl-errors': 'yes'
+    , (ph) =>
+      ph.createPage (page) =>
+        page.set 'onResourceReceived', @_onPageResourceReceived.bind(this, cb)
+        page.open source, @_onPageOpen.bind(this, cb, ph, page)
 
-    client.get options, (res) ->
-      unless res.statusCode is 200
-        err = new Error "#{messages.httpStatusError} #{res.statusCode}:
-          #{http.STATUS_CODES[res.statusCode]}"
-        callback err
-        return
-      callback null, res
-    .on 'error', callback
-    return
+  _onPageResourceReceived: (cb, res) ->
+    if res.stage is 'end' and res.status >= 400
+      err = new Error "#{messages.httpStatusError} #{res.status}:
+        #{http.STATUS_CODES[res.status]}"
+      cb err
+
+  _onPageOpen: (cb, ph, page, status) ->
+    return ph.exit() if status isnt 'success'
+    thru = through (data) -> @emit 'data', data
+    cb null, thru
+
+    page.evaluate (-> document.body.innerHTML), (content) ->
+      thru.end content
+      ph.exit()
 
   _httpOptions: (options) ->
     options = url.parse options if typeof options is 'string'

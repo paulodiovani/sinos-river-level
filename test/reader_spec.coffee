@@ -12,6 +12,10 @@ describe 'Reader', ->
     @file  = './test/fixtures/dummy.html'
     @dummy = fs.readFileSync @file
 
+    pattern    = /<body[^>]*>((.|[\n\r])*)<\/body>/im
+    matches    = pattern.exec @dummy.toString()
+    @dummyBody = matches[1]
+
   beforeEach ->
     @reader = new Reader()
 
@@ -89,7 +93,7 @@ describe 'Reader', ->
         @stream.on 'data', (data) ->
           fullData += data.toString()
         @stream.on 'end', =>
-          expect(fullData).to.be.eql @dummy.toString()
+          expect(fullData).to.have.string @dummyBody
           done()
 
       it 'fails to read non success response', (done) ->
@@ -108,12 +112,8 @@ describe 'Reader', ->
         key: fs.readFileSync './test/fixtures/server.key'
         cert: fs.readFileSync './test/fixtures/server.crt'
       , (req, res) =>
-        if req.url.indexOf('404') > -1
-          res.writeHead 404
-          res.end()
-        else
-          res.writeHead 200, 'Content-Type': 'text/html'
-          res.end @dummy
+        res.writeHead 200, 'Content-Type': 'text/html'
+        res.end @dummy
 
       @server.listen @port, @address
 
@@ -122,11 +122,7 @@ describe 'Reader', ->
 
     describe '#getUrlStream', ->
       beforeEach (done) ->
-        options = url.parse @url
-        options.ca = fs.readFileSync './test/fixtures/server.crt'
-        options.rejectUnauthorized = false
-
-        @reader.getUrlStream options, (err, @stream) =>
+        @reader.getUrlStream @url, (err, @stream) =>
           done()
 
       it 'returns a stream', ->
@@ -137,5 +133,5 @@ describe 'Reader', ->
         @stream.on 'data', (data) ->
           fullData += data.toString()
         @stream.on 'end', =>
-          expect(fullData).to.be.eql @dummy.toString()
+          expect(fullData).to.have.string @dummyBody
           done()

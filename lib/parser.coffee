@@ -3,7 +3,7 @@ trumpet = require('trumpet')
 module.exports = class Parser
   constructor: (@htmlStream) ->
 
-  getYears: (callback = ->) ->
+  getYears: (cb = ->) ->
     tr     = trumpet()
     result = years: []
 
@@ -11,8 +11,8 @@ module.exports = class Parser
       el.createReadStream().on 'data', (data) ->
         result.years.push data.toString()
 
-    tr.on 'error', callback
+    tr.on 'error', cb
     tr.on 'end', ->
-      callback null, result
+      cb null, result
 
     @htmlStream.pipe tr
