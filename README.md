@@ -19,12 +19,12 @@ While still in development you can install directly from github repository.
 npm install -g https://github.com/paulodiovani/sinos-river-parser.git
 ```
 
-After that, just run `sinos-level [OPTIONS] [INPUT_SOURCE]`.
+After that, just run `sinos-river-level [OPTIONS] [INPUT_SOURCE]`.
 
 The output from `--help` option os bellow.
 
 ```text
-usage: sinos-level [OPTIONS] [INPUT_SOURCE]
+usage: sinos-river-level [OPTIONS] [INPUT_SOURCE]
 
 INPUT_SOURCE:
   file or url to read from
